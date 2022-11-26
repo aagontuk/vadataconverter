@@ -24,10 +24,12 @@ def convert(in_file, sht_name, out_file):
     df = pd.read_csv(in_file)
     df.icd10 = df.icd10.fillna('Uknown')
     df.age = df.age.replace(' Years', '-1 Years')
+    df.age = df.age.replace(' years', '-1 Years')
     
     disease = list(set(df['icd10']))
     
     df['age'] = df['age'].str.replace(" Years",'')
+    df['age'] = df['age'].str.replace(" years",'')
     
     result = {}
     for d in disease:

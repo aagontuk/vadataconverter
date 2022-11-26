@@ -32,7 +32,7 @@ def open_file():
     global file_list
     global isFirstFile
     filetypes = (
-        ('Excel 97-2003 Workbook', '*.xls'),
+        ('CSV (Comma delimited)', '*.csv'),
         ('All Files', '*')
     )
 
@@ -66,7 +66,7 @@ def convert_files():
 
         bname = path.splitext(f)[0]
         ext = path.splitext(f)[1]
-        outfile = bname + '_converted' + ext
+        outfile = bname + '_converted' + '.xls'
 
         try:
             convert(f, sheet_name, outfile)
