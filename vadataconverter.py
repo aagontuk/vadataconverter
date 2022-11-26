@@ -99,8 +99,7 @@ def do_convert():
     cthread.start()
 
 root = Tk()
-root.geometry("600x400+300+300")
-#root.attributes('-type', 'dialog')
+root.geometry("600x400")
     
 root.title("VADataConverter")
 
