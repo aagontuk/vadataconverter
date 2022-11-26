@@ -21,29 +21,26 @@ def get_range(age, start, end, inc = 5):
     return l_lim, u_lim
 
 def convert(in_file, sht_name, out_file):
-    
-    df = pd.read_excel(in_file, sheet_name = sht_name,
-            usecols='A:C')
+    df = pd.read_csv(in_file)
+    df.icd10 = df.icd10.fillna('Uknown')
+    df.age = df.age.replace(' Years', '-1 Years')
     
     disease = list(set(df['icd10']))
     
-    df_nan = df[df['age'].isna()]
-    
-    df_nonan = df[df['age'].notna()]
-    df_nonan['age'] = df_nonan['age'].str.replace(" years",'')
-    df_nonan['age'] = df_nonan['age'].str.replace(" year",'')
-    df_nonan.loc[df_nonan['age'].str.contains(' days'), 'age'] = '0'
-    df_nonan.loc[df_nonan['age'].str.contains(' day'), 'age'] = '0'
-    df_nonan.loc[df_nonan['age'].str.contains(' months'), 'age'] = '0'
-    df_nonan.loc[df_nonan['age'].str.contains(' month'), 'age'] = '0'
-    
+    df['age'] = df['age'].str.replace(" Years",'')
     
     result = {}
     for d in disease:
-        result[d] = {1: {}, 2:{}}
+        result[d] = {1: {}, 2:{}, 9:{}}
     
     
-    for i, row in df_nonan.iterrows():
+    #for i, row in df_nonan.iterrows():
+    for i, row in df.iterrows():
+        if int(row['age']) == -1:
+            try:
+                result[row['icd10']][int(row['sex'])]['Uknown'] += 1
+            except KeyError:
+                result[row['icd10']][int(row['sex'])]['Uknown'] = 1
         if int(row['age']) == 0:
             try:
                 result[row['icd10']][int(row['sex'])]['<1 Year'] += 1
@@ -70,12 +67,6 @@ def convert(in_file, sht_name, out_file):
             except KeyError:
                 result[row['icd10']][int(row['sex'])][key] = 1                   
     
-    for i, row in df_nan.iterrows():
-        try:
-            result[row['icd10']][row['sex']]['Uknown'] += 1
-        except KeyError:
-            result[row['icd10']][row['sex']]['Uknown'] = 1
-            
     columns = ['<1 Year', '1-4 Year']
     
     for i in range(5, 94, 5):
