@@ -77,7 +77,7 @@ def convert_files():
         except:
             old = lbl_file_txt.get()
             new = old + 'Error!\n'
-            lbl_file_txt.set(old)
+            lbl_file_txt.set(new)
 
     lbl_status_txt.set("Done!")
     
