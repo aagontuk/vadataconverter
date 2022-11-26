@@ -1,5 +1,5 @@
+from os import path
 from time import sleep
-
 from tkinter import (
     Tk,
     RIGHT,
@@ -22,34 +22,72 @@ from tkinter import (
 
 from tkinter import filedialog as fd
 
+from converter import convert
+
+file_list = []
+isFirstFile = True
 
 def open_file():
+    global file_list
+    global isFirstFile
     filetypes = (
-        ('Text Files', '*.txt'),
+        ('Excel 97-2003 Workbook', '*.xls'),
         ('All Files', '*')
     )
 
     filenames = fd.askopenfilenames(
         title = 'Select File(s)',
-        initialdir='C:\\',
+        initialdir=path.expanduser('~'),
         filetypes=filetypes
     )
 
-    lbl_str = ''
+    if isFirstFile == True:
+        lbl_file_txt.set('')
+        isFirstFile = False
+
+    lbl_str = lbl_file_txt.get()
     for f in filenames:
-        lbl_str += f
+        file_list.append(f)
+        lbl_str += path.basename(f)
         lbl_str += '\n'
-    print(lbl_str)
-    lbl_file_text.set(lbl_str)
+    lbl_file_txt.set(lbl_str)
 
 def do_convert():
-    print(lbl_file_text.get().split(sep='\n'))
-    lbl_status_txt.set("Converting...")
+    global file_list
+    global isFirstFile
+    sheet_name = 'individual-cause-of-death'
+    lbl_status_txt.set('Converting...')
+    lbl_file_txt.set('')
+    for f in file_list:
+        old = lbl_file_txt.get()
+        new = old + 'Converting ' + path.basename(f) + '\n'
+        lbl_file_txt.set(new)
+
+
+        bname = path.splitext(f)[0]
+        ext = path.splitext(f)[1]
+        outfile = bname + '_converted' + ext
+
+        try:
+            convert(f, sheet_name, outfile)
+            
+            old = lbl_file_txt.get()
+            new = old + 'Done!\n'
+            lbl_file_txt.set(new)
+        except:
+            print("Error")
+            old = lbl_file_txt.get()
+            new = old + 'Error!\n'
+            lbl_file_txt.set(old)
+            print("Should set")
+
     lbl_status_txt.set("Done!")
+    isFirstFile = True
+    file_list = []
 
 root = Tk()
 root.geometry("600x400+300+300")
-root.attributes('-type', 'dialog')
+#root.attributes('-type', 'dialog')
     
 root.title("VADataConverter")
 
@@ -69,18 +107,20 @@ btn_browse.pack(side=RIGHT, padx=2)
 frm_mid = Frame(root, borderwidth=frame_border_width)
 frm_mid.pack(fill=BOTH, expand=True)
 
-lbl_file_text = StringVar()
-lbl_file_text.set("Selected files will be shown here")
+lbl_file_txt = StringVar()
+lbl_file_txt.set("Selected files will be shown here")
 lbl_files = Label(
     frm_mid,
     relief=RIDGE,
     font=font,
-    textvariable=lbl_file_text,
+    textvariable=lbl_file_txt,
     justify=LEFT,
     anchor='nw',
+    wraplength=500,
+    height=13
 )
 
-lbl_files.pack(fill=BOTH, expand=True)
+lbl_files.pack(fill=X, expand=False)
 
 frm_bot = Frame(root, borderwidth=frame_border_width)
 frm_bot.pack(fill=X)

@@ -22,7 +22,8 @@ def get_range(age, start, end, inc = 5):
 
 def convert(in_file, sht_name, out_file):
     
-    df = pd.read_excel(in_file, sheet_name = sht_name)
+    df = pd.read_excel(in_file, sheet_name = sht_name,
+            usecols='A:C')
     
     disease = list(set(df['icd10']))
     
@@ -104,7 +105,7 @@ def convert(in_file, sht_name, out_file):
     columns.insert(0, 'Disease')
     
     df_converted = pd.DataFrame(output_list, columns = columns)
-    df_converted.to_excel(out_file, index=False)
+    df_converted.to_excel(out_file, sheet_name=sht_name, index=False)
             
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert VA Data")
@@ -116,5 +117,5 @@ if __name__ == "__main__":
     input_file = args.input_file
     sheet_name = args.sheet_name
     output_file = args.output_file
-
+    
     convert(input_file, sheet_name, output_file)
