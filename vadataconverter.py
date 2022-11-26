@@ -1,5 +1,6 @@
 from os import path
 from time import sleep
+from threading import Thread
 from tkinter import (
     Tk,
     RIGHT,
@@ -52,12 +53,11 @@ def open_file():
         lbl_str += '\n'
     lbl_file_txt.set(lbl_str)
 
-def do_convert():
+def convert_files():
     global file_list
     global isFirstFile
     sheet_name = 'individual-cause-of-death'
-    lbl_status_txt.set('Converting...')
-    lbl_file_txt.set('')
+    
     for f in file_list:
         old = lbl_file_txt.get()
         new = old + 'Converting ' + path.basename(f) + '\n'
@@ -75,15 +75,28 @@ def do_convert():
             new = old + 'Done!\n'
             lbl_file_txt.set(new)
         except:
-            print("Error")
             old = lbl_file_txt.get()
             new = old + 'Error!\n'
             lbl_file_txt.set(old)
-            print("Should set")
 
     lbl_status_txt.set("Done!")
+    
+    btn_convert['state'] = 'normal'
+    btn_browse['state'] = 'normal'
+    
     isFirstFile = True
     file_list = []
+
+def do_convert():
+    global file_list
+    lbl_status_txt.set('Converting...')
+    lbl_file_txt.set('')
+
+    btn_convert['state'] = 'disabled'
+    btn_browse['state'] = 'disabled'
+    
+    cthread = Thread(target = convert_files)
+    cthread.start()
 
 root = Tk()
 root.geometry("600x400+300+300")
