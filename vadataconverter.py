@@ -1,3 +1,4 @@
+from sys import platform
 from os import path
 from time import sleep
 from threading import Thread
@@ -65,8 +66,11 @@ def convert_files():
 
 
         bname = path.splitext(f)[0]
-        ext = path.splitext(f)[1]
-        outfile = bname + '_converted' + '.xls'
+
+        if platform == "win32":
+            outfile = bname + '_converted' + '.xls'
+        else:
+            outfile = bname + '_converted' + '.csv'
 
         try:
             convert(f, sheet_name, outfile)
@@ -100,6 +104,7 @@ def do_convert():
 
 root = Tk()
 root.geometry("600x400")
+root.attributes('-type', 'dialog')
     
 root.title("VADataConverter")
 

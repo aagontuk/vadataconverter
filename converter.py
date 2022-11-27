@@ -7,6 +7,7 @@ Created on Sat Aug 27 12:21:06 2022
 
 import pandas as pd
 import argparse
+from sys import platform
 
 def get_range(age, start, end, inc = 5):
     u_lim = 0
@@ -98,7 +99,11 @@ def convert(in_file, sht_name, out_file):
     columns.insert(0, 'Disease')
     
     df_converted = pd.DataFrame(output_list, columns = columns)
-    df_converted.to_excel(out_file, sheet_name=sht_name, index=False)
+    
+    if platform == "win32":
+        df_converted.to_excel(out_file, sheet_name=sht_name, index=False)
+    else:
+        df_converted.to_csv(out_file, index=False)
             
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert VA Data")
