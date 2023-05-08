@@ -2,6 +2,13 @@
 
 To process verbal autopsy data.
 
+## How to Download VADataConverter ##
+
+1. Download the zip file from this link: https://github.com/aagontuk/vadataconverter/releases/download/v1.0.2/vadataconverter.zip
+2. Unzip it.
+3. Go to vadataconverter folder.
+4. Double click on vadataconverter to run the software.
+
 ## How to Use ##
 
 1. Click `Add` and add one or more verbal autopsy data CSV file.
