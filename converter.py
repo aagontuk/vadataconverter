@@ -23,6 +23,7 @@ def get_range(age, start, end, inc = 5):
 def convert(in_file, sht_name, out_file):
     df = pd.read_csv(in_file)
     df.icd10 = df.icd10.fillna('Uknown')
+    df.age = df.age.fillna('-1 Years')
     df.age = df.age.replace(' Years', '-1 Years')
     df.age = df.age.replace(' years', '-1 Years')
     
@@ -36,7 +37,6 @@ def convert(in_file, sht_name, out_file):
         result[d] = {1: {}, 2:{}, 9:{}}
     
     
-    #for i, row in df_nonan.iterrows():
     for i, row in df.iterrows():
         if int(row['age']) == -1:
             try:
@@ -96,14 +96,14 @@ def convert(in_file, sht_name, out_file):
             
     columns.insert(0, 'Sex')
     columns.insert(0, 'Disease')
-    
+
     df_converted = pd.DataFrame(output_list, columns = columns)
     df_converted.to_excel(out_file, sheet_name=sht_name, index=False)
             
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert VA Data")
     parser.add_argument('--input-file', type=str, required=True, help='Provide input file to convert')
-    parser.add_argument('--sheet-name', type=str, required=True, help='Name of the sheet')
+    parser.add_argument('--sheet-name', type=str, help='Name of the sheet for excel file')
     parser.add_argument('--output-file', type=str, required=True, help='Provide output file name')
 
     args = parser.parse_args()

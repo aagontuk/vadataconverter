@@ -66,7 +66,7 @@ def convert_files():
 
         bname = path.splitext(f)[0]
         ext = path.splitext(f)[1]
-        outfile = bname + '_converted' + '.xls'
+        outfile = bname + '_converted' + '.xlsx'
 
         try:
             convert(f, sheet_name, outfile)
