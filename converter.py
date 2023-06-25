@@ -23,9 +23,13 @@ def get_range(age, start, end, inc = 5):
 def convert(in_file, sht_name, out_file):
     df = pd.read_csv(in_file)
     df.icd10 = df.icd10.fillna('Uknown')
+    df.sex = df.sex.fillna(5)
     df.age = df.age.fillna('-1 Years')
     df.age = df.age.replace(' Years', '-1 Years')
     df.age = df.age.replace(' years', '-1 Years')
+    df.age = df.age.replace('Years', '-1 Years')
+    df.age = df.age.replace('years', '-1 Years')
+    
     
     disease = list(set(df['icd10']))
     
@@ -34,7 +38,7 @@ def convert(in_file, sht_name, out_file):
     
     result = {}
     for d in disease:
-        result[d] = {1: {}, 2:{}, 9:{}}
+        result[d] = {1: {}, 2: {}, 3: {}, 5: {}}
     
     
     for i, row in df.iterrows():
