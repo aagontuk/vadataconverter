@@ -18,4 +18,7 @@ To process verbal autopsy data.
 
 ## Developer Instruction ##
 
-* PyInstaller in used for packaging
+* PyInstaller in used for packaging windows binary
+```
+pyinstaller.exe --noconsole vadataconverter.py
+```
