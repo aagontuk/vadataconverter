@@ -7,102 +7,46 @@ Created on Sat Aug 27 12:21:06 2022
 
 import pandas as pd
 import argparse
-
-def get_range(age, start, end, inc = 5):
-    u_lim = 0
-    l_lim = 0
-    while start < end:
-        l_lim = start
-        u_lim = start + (inc - 1)
-        start = start + inc
-        if age >= l_lim and age <= u_lim:
-            break
-        
-    return l_lim, u_lim
+import sys
 
 def convert(in_file, sht_name, out_file):
     df = pd.read_csv(in_file)
-    df.icd10 = df.icd10.fillna('Uknown')
-    df.sex = df.sex.fillna(5)
-    df.age = df.age.fillna('-1 Years')
-    df.age = df.age.replace(' Years', '-1 Years')
-    df.age = df.age.replace(' years', '-1 Years')
-    df.age = df.age.replace('Years', '-1 Years')
-    df.age = df.age.replace('years', '-1 Years')
-    
-    
-    disease = list(set(df['icd10']))
-    
-    df['age'] = df['age'].str.replace(" Years",'')
-    df['age'] = df['age'].str.replace(" years",'')
-    
-    result = {}
-    for d in disease:
-        result[d] = {1: {}, 2: {}, 3: {}, 5: {}}
-    
-    
-    for i, row in df.iterrows():
-        if int(row['age']) == -1:
-            try:
-                result[row['icd10']][int(row['sex'])]['Uknown'] += 1
-            except KeyError:
-                result[row['icd10']][int(row['sex'])]['Uknown'] = 1
-        if int(row['age']) == 0:
-            try:
-                result[row['icd10']][int(row['sex'])]['<1 Year'] += 1
-            except KeyError:
-                result[row['icd10']][int(row['sex'])]['<1 Year'] = 1
-        elif int(row['age']) >= 1 and int(row['age']) <= 4:
-            try:
-                result[row['icd10']][int(row['sex'])]['1-4 Year'] += 1
-            except KeyError:
-                result[row['icd10']][int(row['sex'])]['1-4 Year'] = 1
-    
-        elif int(row['age']) >= 95:
-            try:
-                result[row['icd10']][int(row['sex'])]['95+ Year'] += 1
-            except KeyError:
-                result[row['icd10']][int(row['sex'])]['95+ Year'] = 1
-    
-        else:
-            lower, upper = get_range(int(row['age']),5,94)
-            key = str(lower)+'-'+str(upper)+' Year'
-        
-            try:
-                result[row['icd10']][int(row['sex'])][key] += 1
-            except KeyError:
-                result[row['icd10']][int(row['sex'])][key] = 1                   
-    
-    columns = ['<1 Year', '1-4 Year']
-    
-    for i in range(5, 94, 5):
-        key = str(i) + '-' + str(i + 4) + ' Year'
-        columns.append(key)
-        
-    columns.append('95+ Year')
-    columns.append('Uknown')
-            
-    output_list = []
-    for name, value in result.items():
-        for sex in value.keys():
-            i_list = []
-            i_list.append(name)
-            i_list.append(sex)
-            
-            for column in columns:
-            
-                try:
-                    i_list.append(value[sex][column])
-                except KeyError:
-                    i_list.append(0)
-                    
-            output_list.append(i_list)
-            
-    columns.insert(0, 'Sex')
-    columns.insert(0, 'Disease')
+    df = df[['icd10', 'sex', 'age']]
 
-    df_converted = pd.DataFrame(output_list, columns = columns)
-    df_converted.to_excel(out_file, sheet_name=sht_name, index=False)
+    df['icd10'].fillna('Unknown', inplace=True)
+    df['sex'].fillna('Unknown', inplace=True)
+    
+    age_bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 1000]
+
+    # Generate lebels
+    age_labels = []
+    for i in range(0, len(age_bins) - 2):
+        age_labels.append('{}-{} Year'.format(age_bins[i], age_bins[i+1] - 1))
+    age_labels.append('95+ Year')
+
+    # Create a new column for each age label
+    df['<1 Year'] = 0
+    for label in age_labels:
+        df[label] = 0  # Initialize with 0
+
+    # Assign 1 to the corresponding age label column based on the Age of the entry
+    for index, row in df.iterrows():
+        age = row['age']
+        if pd.notna(age):  # Check if 'Age' is not NaN
+            for i, label in enumerate(age_labels):
+                if age <= 0:
+                    df.at[index, '<1 Year'] = 1
+                if age_bins[i] <= age < age_bins[i + 1]:
+                    df.at[index, label] = 1
+                    break
+        else:
+            df.at[index, 'Unknown'] = 1  # Assign to 'unknown' if 'Age' is NaN
+
+    grouped = df.groupby(['icd10', 'sex']).sum().reset_index()
+    grouped = grouped.drop('age', axis=1)
+
+    # grouped.to_csv("output_file.csv", index=False)
+    grouped.to_excel(out_file, sheet_name=sht_name, index=False)
             
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert VA Data")
