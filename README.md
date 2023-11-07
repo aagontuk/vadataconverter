@@ -4,7 +4,7 @@ To process verbal autopsy data.
 
 ## How to Download VADataConverter ##
 
-1. Download the zip file from this link: https://github.com/aagontuk/vadataconverter/releases/download/v1.0.3/vadataconverter.zip
+1. Download the zip file from this link: https://github.com/aagontuk/vadataconverter/releases/download/v2.0.0/vadataconverter.zip
 2. Unzip it.
 3. Go to vadataconverter folder.
 4. Double click on vadataconverter to run the software.
