@@ -18,7 +18,15 @@ To process verbal autopsy data.
 
 ## Developer Instruction ##
 
-* PyInstaller in used for packaging windows binary
+* PyInstaller is used for packaging windows binary
 ```
 pyinstaller.exe --noconsole vadataconverter.py
+```
+
+* Using the converter from commandline
+
+The converted takes a csv file and creates a xlsx file.
+
+```
+python converter.py --input-file vadataoriginal.csv --output-file vadataconverted.xlsx --sheet-name vadata
 ```
