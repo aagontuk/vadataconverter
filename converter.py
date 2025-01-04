@@ -26,6 +26,10 @@ def convert(in_file, sht_name, out_file):
 
     # Create a new column for each age label
     df['<1 Year'] = 0
+    df['1 Year'] = 0
+    df['2 Year'] = 0
+    df['3 Year'] = 0
+    df['4 Year'] = 0
     for label in age_labels:
         df[label] = 0  # Initialize with 0
 
@@ -36,6 +40,14 @@ def convert(in_file, sht_name, out_file):
             for i, label in enumerate(age_labels):
                 if age <= 0:
                     df.at[index, '<1 Year'] = 1
+                if age == 1:
+                    df.at[index, '1 Year'] = 1
+                if age == 2:
+                    df.at[index, '2 Year'] = 1
+                if age == 3:
+                    df.at[index, '3 Year'] = 1
+                if age == 4:
+                    df.at[index, '4 Year'] = 1
                 if age_bins[i] <= age < age_bins[i + 1]:
                     df.at[index, label] = 1
                     break
